@@ -4,18 +4,29 @@ import ProductData from "./ProductData.mjs";
 const dataSource = new ProductData("tents");
 const productId = getParam("product");
 
+console.log("Current Product ID from URL:", productId);
+
 async function loadProductDetails() {
+  if (!productId) {
+    console.error("Error: No product ID found in the URL! (Example: ?product=880RR)");
+    return;
+  }
+
   const product = await dataSource.findProductById(productId);
   if (product) {
     renderProductDetails(product);
 
-    // Attach event listener AFTER the button is rendered on the page
     const addToCartButton = document.getElementById("addToCart");
     if (addToCartButton) {
       addToCartButton.addEventListener("click", () => {
+        console.log("Add to Cart button clicked for:", product.Name);
         addProductToCart(product);
       });
+    } else {
+      console.log("Error: #addToCart button not found in DOM.");
     }
+  } else {
+    console.error("Error: Product not found for ID:", productId);
   }
 }
 

@@ -5,10 +5,12 @@ export function getParam(param) {
   return urlParams.get(param);
 }
 
+// helper to read from local storage
 export function getLocalStorage(key) {
   return JSON.parse(localStorage.getItem(key));
 }
 
+// helper to write to local storage
 export function setLocalStorage(key, data) {
   localStorage.setItem(key, JSON.stringify(data));
 }
