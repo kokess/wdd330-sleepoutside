@@ -1,25 +1,23 @@
-import { getLocalStorage, setLocalStorage, getParam } from "./utils.mjs";
-import ProductData from "./productData.mjs";
-
-const dataSource = new ProductData("tents");
-const productId = getParam("product");
-
-async function addProductToCart(productId) {
-  const product = await dataSource.findProductById(productId);
-  let cart = getLocalStorage("so-cart");
-
-  if (!Array.isArray(cart)) {
-    cart = cart ? [cart] : [];
+function convertToJson(res) {
+  if (res.ok) {
+    return res.json();
+  } else {
+    throw new Error("Bad Response");
   }
-
-  cart.push(product);
-  setLocalStorage("so-cart", cart);
 }
 
-// Attach event listener
-const addToCartButton = document.getElementById("addToCart");
-if (addToCartButton) {
-  addToCartButton.addEventListener("click", () => {
-    addProductToCart(productId);
-  });
+export default class ProductData {
+  constructor(category) {
+    this.category = category;
+    this.path = `../json/${this.category}.json`;
+  }
+  getData() {
+    return fetch(this.path)
+      .then(convertToJson)
+      .then((data) => data);
+  }
+  async findProductById(id) {
+    const products = await this.getData();
+    return products.find((item) => item.Id === id);
+  }
 }
