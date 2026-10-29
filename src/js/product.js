@@ -5,7 +5,11 @@ const dataSource = new ProductData("tents");
 const productId = getParam("product");
 
 async function addProductToCart(productId) {
+  console.log("Add to cart clicked for product ID:", productId);
+
   const product = await dataSource.findProductById(productId);
+  console.log("Fetched product details:", product);
+
   let cart = getLocalStorage("so-cart");
 
   if (!Array.isArray(cart)) {
@@ -14,12 +18,14 @@ async function addProductToCart(productId) {
 
   cart.push(product);
   setLocalStorage("so-cart", cart);
+  console.log("Cart saved to localStorage:", cart);
 }
 
-// Attach event listener to add to cart button
 const addToCartButton = document.getElementById("addToCart");
 if (addToCartButton) {
   addToCartButton.addEventListener("click", () => {
     addProductToCart(productId);
   });
+} else {
+  console.log("Error: #addToCart button not found on this page!");
 }
