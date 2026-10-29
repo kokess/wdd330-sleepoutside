@@ -1,23 +1,17 @@
-function convertToJson(res) {
-  if (res.ok) {
-    return res.json();
-  } else {
-    throw new Error("Bad Response");
-  }
-}
+import { getLocalStorage, setLocalStorage } from "./utils.mjs";
 
-export default class ProductData {
-  constructor(category) {
-    this.category = category;
-    this.path = `../json/${this.category}.json`;
+function addProductToCart(product) {
+  // 1. Get existing cart contents from local storage
+  let cart = getLocalStorage("so-cart");
+
+  // 2. Ensure it's an array (if it's null or a single object, convert to array)
+  if (!Array.isArray(cart)) {
+    cart = cart ? [cart] : [];
   }
-  getData() {
-    return fetch(this.path)
-      .then(convertToJson)
-      .then((data) => data);
-  }
-  async findProductById(id) {
-    const products = await this.getData();
-    return products.find((item) => item.Id === id);
-  }
+
+  // 3. Add the new product to the array
+  cart.push(product);
+
+  // 4. Save the updated array back to local storage
+  setLocalStorage("so-cart", cart);
 }
