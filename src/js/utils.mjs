@@ -21,9 +21,62 @@ export function getParam(param) {
   return urlParams.get(param);
 }
 
-// Always returns an array, even if storage is empty or holds a single old-style object
+// Always returns an array of items that each have a Quantity of at least 1,
+// even if storage is empty or holds a single old-style object
 export function getCart() {
-  const cart = getLocalStorage(CART_KEY);
-  if (Array.isArray(cart)) return cart;
-  return cart ? [cart] : [];
+  const stored = getLocalStorage(CART_KEY);
+  const items = Array.isArray(stored) ? stored : stored ? [stored] : [];
+  return items.map((item) => ({
+    ...item,
+    Quantity: Math.max(1, Number(item.Quantity) || 1),
+  }));
+}
+
+export function saveCart(cart) {
+  setLocalStorage(CART_KEY, cart);
+  updateCartCount();
+}
+
+// Add a product; if it is already in the cart, increase its quantity
+export function addToCart(product, quantity = 1) {
+  const cart = getCart();
+  const existing = cart.find((item) => item.Id === product.Id);
+
+  if (existing) {
+    existing.Quantity += quantity;
+  } else {
+    cart.push({ ...product, Quantity: quantity });
+  }
+  saveCart(cart);
+}
+
+// delta is +1 or -1; an item that reaches 0 is removed
+export function changeQuantity(id, delta) {
+  const cart = getCart();
+  const item = cart.find((i) => i.Id === id);
+  if (!item) return;
+
+  item.Quantity += delta;
+  saveCart(cart.filter((i) => i.Quantity > 0));
+}
+
+export function removeFromCart(id) {
+  saveCart(getCart().filter((item) => item.Id !== id));
+}
+
+export function clearCart() {
+  saveCart([]);
+}
+
+export function getCartCount() {
+  return getCart().reduce((count, item) => count + item.Quantity, 0);
+}
+
+// Optional: shows a count in any element with id="cart-count" (does nothing if it's missing)
+export function updateCartCount() {
+  const el = document.querySelector("#cart-count");
+  if (!el) return;
+  const count = getCartCount();
+  el.textContent = count;
+  el.hidden = count === 0;
 }
