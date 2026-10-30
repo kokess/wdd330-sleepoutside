@@ -14,7 +14,14 @@
   --large-font: 1.2em;
 }
 
-* {
+:root {
+  /* ... vars ... */
+}
+
+/* end of root */
+
+  *{
+  /* <<< THIS IS NOW THE ONLY THING ON LINE 17 >>> */
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -64,20 +71,20 @@ p {
   position: relative;
 }
 
+/* Allow hero images/overlays not to block mouse events */
 .hero .logo {
   position: absolute;
   left: calc(50% - 60px);
   bottom: -15px;
   background-color: white;
+  pointer-events: none;
 }
 
 .logo--square {
   font-size: var(--small-font);
   width: 110px;
   height: 80px;
-
   flex-direction: column;
-  align-items: flex-end;
   box-shadow: 1px 1px 4px var(--light-grey);
   justify-content: center;
   align-items: center;
@@ -90,7 +97,7 @@ p {
   margin-top: -1.3em;
 }
 
-.logo--square > div {
+.logo--square>div {
   margin-top: -1.7em;
 }
 
@@ -108,6 +115,10 @@ button {
   border: 0;
   font-size: var(--large-font);
   cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
 }
 
 .divider {
@@ -133,9 +144,13 @@ button {
 
 /* End cart icon styles */
 
+/* --- Look right HERE, lines 147–159 --- */
+
 .mission {
-  position: absolute;
-  top: 1rem;
+  /* --- FIX 1: Add position relative so clicks can pass through --- */
+  position: relative;
+  /* --- FIX 2: Correct top value to auto to clear the banner area --- */
+  top: auto;
   left: 0;
   right: 0;
   line-height: 1.3;
@@ -143,6 +158,8 @@ button {
   background-color: var(--dark-grey);
   color: var(--light-grey);
   opacity: 0.8;
+  pointer-events: none;
+  /* Prevents banner overlay from blocking clicks */
 }
 
 .mission p {
@@ -166,6 +183,9 @@ button {
 .product-list a {
   text-decoration: none;
   color: var(--dark-grey);
+  display: block;
+  /* Makes full card area clickable */
+  height: 100%;
 }
 
 /* Styles for product lists */
@@ -175,6 +195,12 @@ button {
   padding: 0.5em;
   border: 1px solid var(--light-grey);
   max-width: 250px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .product-card h2,
@@ -208,7 +234,6 @@ button {
   display: grid;
   grid-template-columns: 25% auto 15%;
   font-size: var(--small-font);
-  /* max-height: 120px; */
   align-items: center;
 }
 
