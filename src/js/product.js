@@ -1,42 +1,51 @@
-import { getLocalStorage, setLocalStorage, getParam } from "./utils.mjs";
+import { getCart, setLocalStorage, getParam, CART_KEY } from "./utils.mjs";
 import ProductData from "./ProductData.mjs";
 
 const dataSource = new ProductData("tents");
 const productId = getParam("product");
 
-console.log("Current Product ID from URL:", productId);
+// textContent (not innerHTML) because productId comes from the URL
+function showMessage(text) {
+  const p = document.createElement("p");
+  p.className = "product-message";
+  p.textContent = text;
+  document.querySelector("main").replaceChildren(p);
+}
 
 async function loadProductDetails() {
   if (!productId) {
-    console.error("Error: No product ID found in the URL! (Example: ?product=880RR)");
+    showMessage("No product selected. Go back to the home page and choose a tent.");
     return;
   }
 
-  const product = await dataSource.findProductById(productId);
-  if (product) {
+  try {
+    const product = await dataSource.findProductById(productId);
+
+    if (!product) {
+      showMessage(`Sorry, we couldn't find a product with ID "${productId}".`);
+      return;
+    }
+
     renderProductDetails(product);
 
-    const addToCartButton = document.getElementById("addToCart");
-    if (addToCartButton) {
-      addToCartButton.addEventListener("click", () => {
-        console.log("Add to Cart button clicked for:", product.Name);
-        addProductToCart(product);
-      });
-    } else {
-      console.log("Error: #addToCart button not found in DOM.");
-    }
-  } else {
-    console.error("Error: Product not found for ID:", productId);
+    document
+      .getElementById("addToCart")
+      .addEventListener("click", () => addProductToCart(product));
+  } catch (error) {
+    console.error("Could not load product:", error);
+    showMessage("Something went wrong loading this product. Please try again.");
   }
 }
 
 function renderProductDetails(product) {
-  const html = `<section class="product-detail"> 
+  const color = product.Colors?.[0]?.ColorName ?? "";
+
+  const html = `<section class="product-detail">
     <h3>${product.Brand.Name}</h3>
     <h2 class="divider">${product.NameWithoutBrand}</h2>
     <img class="divider" src="${product.Image}" alt="${product.NameWithoutBrand}" />
     <p class="product-card__price">$${product.FinalPrice}</p>
-    <p class="product__color">${product.Colors[0].ColorName}</p>
+    <p class="product__color">${color}</p>
     <p class="product__description__html">${product.DescriptionHtmlSimple}</p>
     <div class="product-detail__add">
       <button id="addToCart" data-id="${product.Id}">Add to Cart</button>
@@ -47,13 +56,10 @@ function renderProductDetails(product) {
 }
 
 function addProductToCart(product) {
-  let cart = getLocalStorage("so-cart");
-  if (!Array.isArray(cart)) {
-    cart = cart ? [cart] : [];
-  }
+  const cart = getCart();
   cart.push(product);
-  setLocalStorage("so-cart", cart);
-  alert("Success! Item added to your cart.");
+  setLocalStorage(CART_KEY, cart);
+  alert(`${product.NameWithoutBrand} was added to your cart.`);
 }
 
 loadProductDetails();

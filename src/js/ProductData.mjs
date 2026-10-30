@@ -1,26 +1,28 @@
 function convertToJson(res) {
   if (res.ok) {
     return res.json();
-  } else {
-    throw new Error("Bad Response");
   }
+  throw new Error(`Bad response: ${res.status} ${res.statusText}`);
 }
 
 export default class ProductData {
   constructor(category) {
     this.category = category;
-    // Using absolute root path so Vite always finds the JSON file correctly
+    // Root-absolute path so it works from any page (home, product, cart).
+    // Adjust if your json folder lives somewhere else.
     this.path = `/json/${this.category}.json`;
   }
 
-  getData() {
-    return fetch(this.path)
-      .then(convertToJson)
-      .then((data) => data);
+  async getData() {
+    const response = await fetch(this.path);
+    return convertToJson(response);
   }
 
   async findProductById(id) {
     const products = await this.getData();
-    return products.find((item) => item.Id === id);
+    // Compare as upper-case strings so ?product=880rr and ?product=880RR both work
+    return products.find(
+      (item) => String(item.Id).toUpperCase() === String(id).toUpperCase(),
+    );
   }
 }

@@ -1,37 +1,50 @@
-import { getLocalStorage } from "./utils.mjs";
+import { getCart, setLocalStorage, CART_KEY } from "./utils.mjs";
+
+const listElement = document.querySelector("#cart-list");
+const totalElement = document.querySelector("#cart-total");
+
+function cartItemTemplate(item, index) {
+  const color = item.Colors?.[0]?.ColorName ?? "";
+  const link = `/product_pages/index.html?product=${item.Id}`;
+
+  return `<li class="cart-card divider">
+    <a href="${link}" class="cart-card__image">
+      <img src="${item.Image}" alt="${item.Name}" />
+    </a>
+    <h2 class="cart-card__name"><a href="${link}">${item.Name}</a></h2>
+    <p class="cart-card__color">${color}</p>
+    <p class="cart-card__quantity">qty: 1</p>
+    <p class="cart-card__price">$${Number(item.FinalPrice).toFixed(2)}</p>
+    <button class="cart-card__remove" data-index="${index}"
+            aria-label="Remove ${item.Name} from cart">&#10005;</button>
+  </li>`;
+}
 
 function renderCartContents() {
-  const cartItems = getLocalStorage("so-cart");
+  const cart = getCart();
 
-  if (!cartItems || (Array.isArray(cartItems) && cartItems.length === 0)) {
-    document.querySelector(".product-list").innerHTML = "<p>Your cart is empty.</p>";
+  if (cart.length === 0) {
+    listElement.innerHTML = `<li class="cart-empty">Your cart is empty. <a href="/index.html">Keep shopping</a></li>`;
+    totalElement.hidden = true;
     return;
   }
 
-  // Ensure items is always treated as an array
-  const itemsArray = Array.isArray(cartItems) ? cartItems : [cartItems];
+  listElement.innerHTML = cart.map(cartItemTemplate).join("");
 
-  const htmlItems = itemsArray.map((item) => cartItemTemplate(item));
-  document.querySelector(".product-list").innerHTML = htmlItems.join("");
+  const total = cart.reduce((sum, item) => sum + Number(item.FinalPrice), 0);
+  totalElement.textContent = `Total: $${total.toFixed(2)}`;
+  totalElement.hidden = false;
 }
 
-function cartItemTemplate(item) {
-  const newItem = `<li class="cart-card divider">
-  <a href="#" class="cart-card__image">
-    <img
-      src="${item.Image}"
-      alt="${item.Name}"
-    />
-  </a>
-  <a href="#">
-    <h2 class="card__name">${item.Name}</h2>
-  </a>
-  <p class="cart-card__color">${item.Colors[0].ColorName}</p>
-  <p class="cart-card__quantity">qty: 1</p>
-  <p class="cart-card__price">$${item.FinalPrice}</p>
-</li>`;
+// One listener on the list handles every remove button, including re-rendered ones
+listElement.addEventListener("click", (event) => {
+  const button = event.target.closest(".cart-card__remove");
+  if (!button) return;
 
-  return newItem;
-}
+  const cart = getCart();
+  cart.splice(Number(button.dataset.index), 1);
+  setLocalStorage(CART_KEY, cart);
+  renderCartContents();
+});
 
 renderCartContents();
