@@ -4,7 +4,6 @@ import ProductData from "./ProductData.mjs";
 const dataSource = new ProductData("tents");
 const productId = getParam("product");
 
-// textContent (not innerHTML) because productId comes from the URL
 function showMessage(text) {
   const p = document.createElement("p");
   p.className = "product-message";

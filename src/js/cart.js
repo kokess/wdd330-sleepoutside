@@ -49,14 +49,13 @@ function renderCartContents() {
 
   const total = cart.reduce(
     (sum, item) => sum + Number(item.FinalPrice) * item.Quantity,
-    0,
+    0
   );
   totalElement.textContent = `Total: $${total.toFixed(2)}`;
   totalElement.hidden = false;
   if (clearButton) clearButton.hidden = false;
 }
 
-// One listener on the list handles every button, including re-rendered ones
 listElement.addEventListener("click", (event) => {
   const button = event.target.closest("button[data-action]");
   if (!button) return;

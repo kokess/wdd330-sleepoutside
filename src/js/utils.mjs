@@ -21,8 +21,7 @@ export function getParam(param) {
   return urlParams.get(param);
 }
 
-// Always returns an array of items that each have a Quantity of at least 1,
-// even if storage is empty or holds a single old-style object
+// Always returns an array of items that each have a Quantity of at least 1
 export function getCart() {
   const stored = getLocalStorage(CART_KEY);
   const items = Array.isArray(stored) ? stored : stored ? [stored] : [];
@@ -72,7 +71,6 @@ export function getCartCount() {
   return getCart().reduce((count, item) => count + item.Quantity, 0);
 }
 
-// Optional: shows a count in any element with id="cart-count" (does nothing if it's missing)
 export function updateCartCount() {
   const el = document.querySelector("#cart-count");
   if (!el) return;
