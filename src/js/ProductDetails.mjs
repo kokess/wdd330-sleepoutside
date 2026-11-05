@@ -39,7 +39,6 @@ export default class ProductDetails {
                     "click",
                     this.addProductToCart.bind(this)
                 );
-
         } catch (error) {
             console.error("Could not load product:", error);
 
@@ -53,6 +52,7 @@ export default class ProductDetails {
         const p = document.createElement("p");
         p.className = "product-message";
         p.textContent = message;
+
         document.querySelector("main").replaceChildren(p);
     }
 
@@ -62,7 +62,6 @@ export default class ProductDetails {
 
         const html = `
       <section class="product-detail">
-
         <h3>${product.Brand?.Name ?? ""}</h3>
 
         <h2 class="divider">
@@ -88,9 +87,7 @@ export default class ProductDetails {
         </p>
 
         <div class="product-detail__add">
-
           <div class="quantity-picker">
-
             <button
               type="button"
               id="qty-minus"
@@ -111,7 +108,6 @@ export default class ProductDetails {
               id="qty-plus"
               aria-label="Increase quantity"
             >+</button>
-
           </div>
 
           <button id="addToCart" data-id="${product.Id}">
@@ -120,10 +116,9 @@ export default class ProductDetails {
 
           <p id="add-status" role="status" aria-live="polite"></p>
 
-          <a id="view-cart" href="/cart/index.html" hidden>
+          <a id="view-cart" href="../cart/" hidden>
             View cart
           </a>
-
         </div>
       </section>
     `;
