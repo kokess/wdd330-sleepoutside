@@ -1,5 +1,6 @@
-import { getLocalStorage } from "./utils.mjs";
+import { getLocalStorage, loadHeaderFooter } from "./utils.mjs";
 
+loadHeaderFooter();
 
 function renderCartContents() {
   const cartItems = getLocalStorage("so-cart") || [];
@@ -8,7 +9,6 @@ function renderCartContents() {
 
   document.querySelector(".product-list").innerHTML = htmlItems.join("");
 }
-
 
 function cartItemTemplate(item) {
   const newItem = `<li class="cart-card divider">
