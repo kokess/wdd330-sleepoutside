@@ -1,4 +1,4 @@
-import { getLocalStorage } from './utils.mjs';
+import { getLocalStorage, setLocalStorage, formDataToJSON } from './utils.mjs';
 import ExternalServices from './ExternalServices.mjs';
 
 const services = new ExternalServices();
@@ -87,10 +87,13 @@ export default class CheckoutProcess {
         try {
             const res = await services.checkout(formData);
             console.log('Order submitted successfully:', res);
-            // Next steps: clear local storage, redirect to a success page, etc.
+            // Happy path: clear cart in localStorage and redirect to success page
+            setLocalStorage(this.key, []);
+            window.location.href = 'success.html';
             return res;
         } catch (err) {
             console.error('Checkout submission failed:', err);
+            // Log or inspect server validation errors returned in err.message
             throw err;
         }
     }
