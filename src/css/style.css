@@ -283,6 +283,25 @@ button {
   margin-bottom: 10px;
 }
 
+.alert {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.alert-close {
+  cursor: pointer;
+  font-weight: bold;
+  padding: 0 0.5rem;
+}
+
 .category-list h3 {
   font-size: 1rem;
   margin: 0;

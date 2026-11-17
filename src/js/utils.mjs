@@ -47,3 +47,28 @@ export async function loadHeaderFooter() {
   const footerElement = document.querySelector("#main-footer");
   renderWithTemplate(footerTemplate, footerElement);
 }
+
+// Create and export an alert message function
+export function alertMessage(message, scroll = true) {
+  // create element to hold the alert
+  const alert = document.createElement('div');
+  // add a class to style the alert
+  alert.classList.add('alert');
+  // set the contents with a message and an X button to remove it
+  alert.innerHTML = `<span>${message}</span><span class="alert-close">X</span>`;
+
+  // add a listener to the alert to see if they clicked on the X
+  alert.addEventListener('click', function (e) {
+    if (e.target.classList.contains('alert-close')) {
+      main.removeChild(this);
+    }
+  })
+
+  // add the alert to the top of main
+  const main = document.querySelector('main');
+  main.prepend(alert);
+
+  // make sure they see the alert by scrolling to the top of the window
+  if (scroll)
+    window.scrollTo(0, 0);
+}
